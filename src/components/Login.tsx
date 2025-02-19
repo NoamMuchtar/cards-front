@@ -2,10 +2,13 @@ import { FormikValues, useFormik } from "formik";
 import { FunctionComponent } from "react";
 import * as yup from "yup";
 import { loginUser } from "../services/userService";
+import { errorMessage, sucessMassage } from "../services/feedbackService";
+import { useNavigate } from "react-router-dom";
 
 interface LoginProps {}
 
 const Login: FunctionComponent<LoginProps> = () => {
+  let navigate = useNavigate();
   const formik: FormikValues = useFormik<FormikValues>({
     initialValues: {
       email: "",
@@ -26,9 +29,15 @@ const Login: FunctionComponent<LoginProps> = () => {
     onSubmit: (values, { resetForm }) => {
       loginUser(values)
         .then((res) => {
-          sessionStorage.setItem("token", res.data);
+          const token = res.data;
+          sessionStorage.setItem("token", token);
+          sucessMassage(`${values.email} Logged in suuccessfuly`);
+          navigate("/");
         })
-        .catch((err) => console.log(err));
+        .catch((err) => {
+          console.log(err);
+          errorMessage(err.response.data);
+        });
       resetForm();
     },
   });

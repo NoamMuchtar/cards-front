@@ -4,6 +4,7 @@ import * as yup from "yup";
 import { normalizeUser } from "../utils/users/normalizeUser";
 import { unnormalizedUser } from "../interfaces/users/UnnormalizedUser";
 import { registerUser } from "../services/userService";
+import { errorMessage, sucessMassage } from "../services/feedbackService";
 
 interface RegisterProps {}
 
@@ -58,8 +59,12 @@ const Register: FunctionComponent<RegisterProps> = () => {
       registerUser(normalizedUser)
         .then((res) => {
           console.log(res);
+          sucessMassage(`${res.data.email} registerd successfuly`);
         })
-        .catch((err) => console.log(err));
+        .catch((err) => {
+          console.log(err);
+          errorMessage(err.response.data);
+        });
       resetForm();
     },
   });
